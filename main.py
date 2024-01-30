@@ -42,13 +42,23 @@ async def on_ready():
 async def kick(interaction: discord.Interaction,
                member: discord.Member,
                reason: Optional[str]):
-        await interaction.guild.kick(member, reason=reason)
+        
         kick_embed = discord.Embed(
                 color=0xFF0000,
                 title=f"Kicked user {str(member)}",
                 description=reason
         )
+
+        if discord.Permissions.administrator in member.guild_permissions:
+                kick_embed.title = "Error while kicking user:"
+                kick_embed.description = "User is administrator."
+                await interaction.response.send_message(embed=kick_embed)
+                return
+        
+        await interaction.guild.kick(member, reason=reason)
         await interaction.response.send_message(embed=kick_embed)
+        
+        
 
 
         ''' MISCELLANEOUS'''
