@@ -39,6 +39,7 @@ async def on_ready():
 @client.tree.command(description="Kicks a member out of the server.")
 @app_commands.describe(member="The member of the server to kick out.",
                        reason="The reason you kicked them.")
+@app_commands.checks.has_permissions(discord.Permissions.kick_members=True)
 async def kick(interaction: discord.Interaction,
                member: discord.Member,
                reason: Optional[str]):
