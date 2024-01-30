@@ -58,7 +58,17 @@ async def kick(interaction: discord.Interaction,
         
         await interaction.guild.kick(member, reason=reason)
         await interaction.response.send_message(embed=kick_embed)
-        
+
+@kick.error
+async def kick_error(interaction: discord.Interaction, 
+                     err: app_commands.AppCommandError):
+        kick_embed = discord.Embed(
+                color=0xFF0000,
+                title="Error"
+        )
+        if isinstance(err, app_commands.errors.MissingPermissions):
+                kick_embed.description = "You do not have the nessecary permisions."
+                await interaction.response.send_message(embed=kick_embed, ephemeral=True)
         
 
 
