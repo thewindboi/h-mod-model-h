@@ -49,12 +49,9 @@ async def kick(interaction: discord.Interaction,
                 title=f"Kicked user {str(member)}",
                 description=reason
         )
-
-        if discord.Permissions.administrator in member.guild_permissions:
-                kick_embed.title = "Error while kicking user:"
-                kick_embed.description = "User is administrator."
-                await interaction.response.send_message(embed=kick_embed)
-                return
+        
+        if member == interaction.user:
+                raise discord.Forbidden
         
         await interaction.guild.kick(member, reason=reason)
         await interaction.response.send_message(embed=kick_embed)
@@ -69,6 +66,8 @@ async def kick_error(interaction: discord.Interaction,
         if isinstance(err, app_commands.errors.MissingPermissions):
                 kick_embed.description = "You do not have the nessecary permisions."
                 await interaction.response.send_message(embed=kick_embed, ephemeral=True)
+        elif isinstance(err, discord.Forbidden):
+                kick_embed.description = "You are unable to kick this person."
         
 
 
