@@ -46,7 +46,7 @@ async def kick(interaction: discord.Interaction,
         kick_embed = discord.Embed(
                 color=0xFF0000,
                 title=f"Kicked user {str(member)}",
-                description=f"Reason - {reason}"
+                description=reason
         )
         await interaction.response.send_message(embed=kick_embed)
 
