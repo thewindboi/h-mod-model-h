@@ -98,7 +98,7 @@ async def ban(interaction: discord.Interaction,
                 description=reason
         )
 
-        await interaction.user.ban(reason=reason)
+        await interaction.guild.ban(member, reason=reason)
         await interaction.response.send_message(embed=ban_embed)
 
 #----------
@@ -119,7 +119,8 @@ async def ban_error(interaction: discord.Interaction,
                 await interaction.response.send_message(embed=ban_embed, ephemeral=True)
         else:
                 ban_embed.description = "Unable to ban user."
-                await interaction.response.send_message(embed=ban_embed, ephemeral=True)        
+                await interaction.response.send_message(embed=ban_embed, ephemeral=True)
+                print(err)     
 
 
 ''' MISCELLANEOUS'''
