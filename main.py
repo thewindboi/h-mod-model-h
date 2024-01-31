@@ -14,6 +14,9 @@ class modbot(discord.Client):
                 self.tree = app_commands.CommandTree(self)
         
         async def setup_hook(self):
+               # Clears all commands
+               self.tree.clear_commands()
+               self.tree.clear_commands(guild=TEST_GUILD)
 
                 # Copies over to testing server
                self.tree.copy_global_to(guild=TEST_GUILD)
@@ -34,15 +37,21 @@ async def on_ready():
         print(f'logged in as {client.user} (ID: {client.user.id})')
 
         
-        ''' MODERATOR UTILITIES '''
+''' MODERATOR UTILITIES '''
 
+#----------
+# Kick command 
+#----------
 @client.tree.command(description="Kicks a member out of the server.")
 @app_commands.describe(member="The member of the server to kick out.",
                        reason="The reason you kicked them.")
 @app_commands.checks.has_permissions(kick_members=True)
 async def kick(interaction: discord.Interaction,
                member: discord.Member,
-               reason: Optional[str]):
+               reason: Optional[str] = None):
+        
+        if member == interaction.user or member.top_role >= interaction.user.top_role:
+                raise discord.Forbidden
         
         kick_embed = discord.Embed(
                 color=0xFF0000,
@@ -50,12 +59,12 @@ async def kick(interaction: discord.Interaction,
                 description=reason
         )
         
-        if member == interaction.user:
-                raise discord.Forbidden
-        
         await interaction.guild.kick(member, reason=reason)
         await interaction.response.send_message(embed=kick_embed)
 
+#----------
+# Kick command error handling
+#----------
 @kick.error
 async def kick_error(interaction: discord.Interaction, 
                      err: app_commands.AppCommandError):
@@ -64,32 +73,65 @@ async def kick_error(interaction: discord.Interaction,
                 title="Error"
         )
         if isinstance(err, app_commands.errors.MissingPermissions):
-                kick_embed.description = "You do not have the nessecary permisions."
+                kick_embed.description = "You do not have the nessecary permissions."
                 await interaction.response.send_message(embed=kick_embed, ephemeral=True)
         elif isinstance(err, discord.Forbidden):
                 kick_embed.description = "You are unable to kick this person."
+                await interaction.response.send_message(embed=kick_embed, ephemeral=True)
+        else:
+                kick_embed.description = "Unable to kick user."
+                await interaction.response.send_message(embed=kick_embed, ephemeral=True)
+
+#----------
+# Ban command 
+#----------
+@client.tree.command(description="Bans a member from the server.")
+@app_commands.describe(member="The member of the server to ban.",
+                       reason="The reason you banned them.")
+@app_commands.checks.has_permissions(ban_members=True)
+async def ban(interaction: discord.Interaction,
+               member: discord.Member,
+               reason: Optional[str] = None):
         
+        if member == interaction.user or member.top_role >= interaction.user:
+                raise discord.Forbidden
+        
+        ban_embed = discord.Embed(
+                color=0xFF0000,
+                title=f"Banned user {str(member)}",
+                description=reason
+        )
+
+        await interaction.user.ban(reason=reason)
+        await interaction.response.send_message(embed=ban_embed)
+
+#----------
+# Ban command error handling
+#----------
+@ban.error
+async def ban_error(interaction: discord.Interaction, 
+                     err: app_commands.AppCommandError):
+        ban_embed = discord.Embed(
+                color=0xFF0000,
+                title="Error"
+        )
+        if isinstance(err, app_commands.errors.MissingPermissions):
+                ban_embed.description = "You do not have the nessecary permissions."
+                await interaction.response.send_message(embed=ban_embed, ephemeral=True)
+        elif isinstance(err, discord.Forbidden):
+                ban_embed.description = "You are unable to ban this person."
+                await interaction.response.send_message(embed=ban_embed, ephemeral=True)
+        else:
+                ban_embed.description = "Unable to ban user."
+                await interaction.response.send_message(embed=ban_embed, ephemeral=True)        
 
 
-        ''' MISCELLANEOUS'''
+''' MISCELLANEOUS'''
 
 @client.tree.command(description="Sends the time between a HEARTBEAT and a HEARTBEAT_ACK.")
 async def ping(interaction: discord.Interaction):
         await interaction.response.send_message(f'Ping! Latency is {client.latency} seconds.', ephemeral=True)
 
-@client.tree.command()
-async def embed_test(interaction: discord.Interaction,
-                     member: discord.Member):
-        embed = discord.Embed(
-                color=0xFF0000,
-                title="Kick embed",
-                description=f"Kicked {str(member)}."
-        )
-        embed.add_field(
-                name="Reason",
-                value=f"Reason: {str(member)} isnt h :("
-        )
-        await interaction.response.send_message("h", embed=embed)
 
 
 TOKEN = os.environ['TOKEN']
