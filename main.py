@@ -14,15 +14,11 @@ class modbot(discord.Client):
                 self.tree = app_commands.CommandTree(self)
         
         async def setup_hook(self):
-               # Clears all commands
-               self.tree.clear_commands()
-               self.tree.clear_commands(guild=TEST_GUILD)
-
                 # Copies over to testing server
                self.tree.copy_global_to(guild=TEST_GUILD)
                
                # Syncs all commands
-               await self.tree.sync()    # Global commands take a while to register with discord.
+               await self.tree.sync(guild=None)    # Global commands take a while to register with discord.
                await self.tree.sync(guild=TEST_GUILD)
                print("synced commands")
 
@@ -93,7 +89,7 @@ async def ban(interaction: discord.Interaction,
                member: discord.Member,
                reason: Optional[str] = None):
         
-        if member == interaction.user or member.top_role >= interaction.user:
+        if member == interaction.user or member.top_role >= interaction.user.top_role:
                 raise discord.Forbidden
         
         ban_embed = discord.Embed(
