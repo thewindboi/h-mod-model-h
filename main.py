@@ -165,6 +165,10 @@ async def timeout_error(interaction: discord.Interaction,
         elif isinstance(err, discord.Forbidden):
                 timeout_embed.description = "You are unable to timeout this user."
                 await interaction.response.send_message(embed=timeout_embed, ephemeral=True)
+        else:
+                timeout_embed.description = "Unable to timeout user."
+                await interaction.response.send_message(embed=timeout_embed, ephemeral=True)
+                print(err)
 
 ''' MISCELLANEOUS'''
 
