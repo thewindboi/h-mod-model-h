@@ -162,6 +162,9 @@ async def timeout_error(interaction: discord.Interaction,
         if isinstance(err, app_commands.errors.MissingPermissions):
                 timeout_embed.description = "You do not have the nessecary permissions."
                 await interaction.response.send_message(embed=timeout_embed, ephemeral=True)
+        elif isinstance(err, discord.Forbidden):
+                timeout_embed.description = "You are unable to timeout this user."
+                await interaction.response.send_message(embed=timeout_embed, ephemeral=True)
 
 ''' MISCELLANEOUS'''
 
