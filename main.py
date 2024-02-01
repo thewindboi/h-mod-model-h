@@ -1,6 +1,7 @@
 import discord
 from discord import app_commands
-from typing import Any, Coroutine, Optional
+from typing import Any, Union, Optional
+from time import datetime
 import os
 
 TEST_GUILD = discord.Object(id=os.environ['GUILD'])
@@ -122,6 +123,43 @@ async def ban_error(interaction: discord.Interaction,
                 await interaction.response.send_message(embed=ban_embed, ephemeral=True)
                 print(err)     
 
+
+#----------
+# Timeout command 
+#----------
+@client.tree.command(description="Timeouts a user.")
+@app_commands.describe(time="The length of time they're timed out")
+@app_commands.checks.has_permissions(moderate_members=True)
+async def timeout(interaction: discord.Interaction,
+               member: discord.Member,
+               time: Optional[Union[datetime.timedelta, datetime.datetime]],
+               reason: Optional[str]):
+        
+        if member == interaction.user or member.top_role >= interaction.user.top_role:
+                raise discord.Forbidden
+        
+        timeout_embed = discord.Embed(
+                color=0xFF0000,
+                title=f"Timed out user {str(member)}",
+                description=reason
+        )
+
+        await interaction.user.timeout(time, reason=reason)
+        await interaction.response.send_message(embed=timeout_embed)
+
+#----------
+# Timeout command error handling
+#----------
+@timeout.error
+async def timeout_error(interaction: discord.Interaction, 
+                        err: app_commands.AppCommandError):
+        timeout_embed = discord.Embed(
+                color=0xFF0000,
+                title="Error"
+        )
+        if isinstance(err, app_commands.errors.MissingPermissions):
+                timeout_embed.description = "You do not have the nessecary permissions."
+                await interaction.response.send_message(embed=timeout_embed, ephemeral=True)
 
 ''' MISCELLANEOUS'''
 
