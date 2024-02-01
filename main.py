@@ -1,7 +1,7 @@
 import discord
 from discord import app_commands
 from typing import Any, Union, Optional
-from time import datetime
+from datetime import datetime, timedelta
 import os
 
 TEST_GUILD = discord.Object(id=os.environ['GUILD'])
@@ -128,23 +128,25 @@ async def ban_error(interaction: discord.Interaction,
 # Timeout command 
 #----------
 @client.tree.command(description="Timeouts a user.")
-@app_commands.describe(time="The length of time they're timed out")
+@app_commands.describe(time="The number of hours to time them out for.")
 @app_commands.checks.has_permissions(moderate_members=True)
 async def timeout(interaction: discord.Interaction,
-               member: discord.Member,
-               time: Optional[Union[datetime.timedelta, datetime.datetime]],
-               reason: Optional[str]):
+                   member: discord.Member,
+                   time: int,
+                   reason: Optional[str]):
         
         if member == interaction.user or member.top_role >= interaction.user.top_role:
                 raise discord.Forbidden
         
         timeout_embed = discord.Embed(
                 color=0xFF0000,
-                title=f"Timed out user {str(member)}",
+                title=f"Timed out user {str(member)} for {time} hours",
                 description=reason
         )
+        
+        deltatime = timedelta(hours=time)
 
-        await interaction.user.timeout(time, reason=reason)
+        await interaction.user.timeout(deltatime, reason=reason)
         await interaction.response.send_message(embed=timeout_embed)
 
 #----------
