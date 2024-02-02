@@ -186,11 +186,11 @@ async def h(interaction: discord.Interaction):
                        "H is gud",
                        "h",
                        "ver rare h message"]
-        h_weights = [0.45,
-                     0.25,
-                     0.25,
-                     0.05]
-        await interaction.response.send_message(random.choice(h_responses, h_weights), ephemeral=True)
+        h_weights = [45,
+                     25,
+                     25,
+                     5]
+        await interaction.response.send_message(choice(h_responses, h_weights), ephemeral=True)
 
 
 
