@@ -3,7 +3,7 @@ from discord import app_commands
 from typing import Any, Union, Optional
 from datetime import datetime, timedelta
 import os
-import random
+from numpy.random import choice
 
 TEST_GUILD = discord.Object(id=os.environ['GUILD'])
 
