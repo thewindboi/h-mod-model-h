@@ -146,7 +146,7 @@ async def timeout(interaction: discord.Interaction,
         
         deltatime = timedelta(hours=time)
 
-        await interaction.user.timeout(deltatime, reason=reason)
+        await member.timeout(deltatime, reason=reason)
         await interaction.response.send_message(embed=timeout_embed)
 
 #----------
