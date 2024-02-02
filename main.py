@@ -3,7 +3,7 @@ from discord import app_commands
 from typing import Any, Union, Optional
 from datetime import datetime, timedelta
 import os
-from numpy.random import choice
+import random
 
 TEST_GUILD = discord.Object(id=os.environ['GUILD'])
 
@@ -185,12 +185,8 @@ async def h(interaction: discord.Interaction):
         h_responses = ["H",
                        "H is gud",
                        "h",
-                       "ver rare h message"]
-        h_weights = [45,
-                     25,
-                     25,
-                     5]
-        await interaction.response.send_message(choice(h_responses, h_weights), ephemeral=True)
+                       "you is ver h"]
+        await interaction.response.send_message(random.choice(h_responses), ephemeral=True)
 
 
 
