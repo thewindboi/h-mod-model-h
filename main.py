@@ -3,6 +3,7 @@ from discord import app_commands
 from typing import Any, Union, Optional
 from datetime import datetime, timedelta
 import os
+import random
 
 TEST_GUILD = discord.Object(id=os.environ['GUILD'])
 
@@ -128,7 +129,7 @@ async def ban_error(interaction: discord.Interaction,
 # Timeout command 
 #----------
 @client.tree.command(description="Timeouts a user.")
-@app_commands.describe(time="The number of hours to time them out for.")
+@app_commands.describe(time="The number of hours to time them out for (0 to remove timeout).")
 @app_commands.checks.has_permissions(moderate_members=True)
 async def timeout(interaction: discord.Interaction,
                    member: discord.Member,
@@ -140,12 +141,15 @@ async def timeout(interaction: discord.Interaction,
         
         timeout_embed = discord.Embed(
                 color=0xFF0000,
-                title=f"Timed out user {str(member)} for {time} hours",
+                title=f"Timed out user {str(member)} for {time} hours.",
                 description=reason
         )
         
         deltatime = timedelta(hours=time)
 
+        if not time:
+                timeout_embed.title = f"Removed timeout from {str(member)}."
+                
         await member.timeout(deltatime, reason=reason)
         await interaction.response.send_message(embed=timeout_embed)
 
@@ -175,6 +179,18 @@ async def timeout_error(interaction: discord.Interaction,
 @client.tree.command(description="Sends the time between a HEARTBEAT and a HEARTBEAT_ACK.")
 async def ping(interaction: discord.Interaction):
         await interaction.response.send_message(f'Ping! Latency is {client.latency} seconds.', ephemeral=True)
+
+@client.tree.command(description="H")
+async def h(interaction: discord.Interaction):
+        h_responses = ["H",
+                       "H is gud",
+                       "h",
+                       "ver rare h message"]
+        h_weights = [0.45,
+                     0.25,
+                     0.25,
+                     0.05]
+        await interaction.response.send_message(random.choice(h_responses, h_weights), ephemeral=True)
 
 
 
